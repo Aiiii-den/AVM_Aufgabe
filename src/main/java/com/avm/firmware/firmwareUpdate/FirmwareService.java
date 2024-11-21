@@ -32,7 +32,7 @@ public class FirmwareService {
                 .orElseThrow(() -> new FirmwareNotFoundException("Firmware for hardware ID " +
                         updateRequest.getHardwareId() + " not found"));
 
-        if (newVersionExists(updateRequest.getCurrentVersion(), firmwareDbo.getVersion())) {
+        if (newVersionAvailable(updateRequest.getCurrentVersion(), firmwareDbo.getVersion())) {
             return FirmwareUpdateResponse.builder()
                     .updateRequired(true)
                     .downloadUrl(firmwareDbo.getDownloadUrl())
@@ -57,13 +57,15 @@ public class FirmwareService {
     }
 
 
-    public boolean newVersionExists(String currentVersion, String newVersion) {
+    public boolean newVersionAvailable(String currentVersion, String newVersion) {
         String[] currentParts = currentVersion.split("\\.");
         String[] newParts = newVersion.split("\\.");
+        int maxLength = Math.max(currentParts.length, newParts.length);
 
-        for (int i = 0; i < Math.min(currentParts.length, newParts.length); i++) {
-            int currentPart = Integer.parseInt(currentParts[i]);
-            int newPart = Integer.parseInt(newParts[i]);
+        for (int i = 0; i < maxLength; i++) {
+            int currentPart = i < currentParts.length ? Integer.parseInt(currentParts[i]) : 0;
+            int newPart = i < newParts.length ? Integer.parseInt(newParts[i]) : 0;
+
 
             if (newPart > currentPart) {
                 return true;
