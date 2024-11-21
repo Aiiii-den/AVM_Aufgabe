@@ -13,6 +13,4 @@ Ein einfacher REST-Service, der es ermöglicht:
 Oder kompatible Versionen.
 
 ##### API-Dokumentation
-Die vollständige API-Dokumentation befindet sich in der openapi.yaml. Diese Datei beschreibt alle verfügbaren Endpunkte, deren Anforderungen und mögliche Antworten.
-Eine Visualisierung der Datei ist nach Starten der Anwendung hier verfügbar:  
-[localhost:8080/swagger-ui/index.html](localhost:8080/swagger-ui/index.html)
+Die vollständige API-Dokumentation befindet sich in der openapi.yaml unter src/main/resources/openapi.yaml
