@@ -52,6 +52,16 @@ paths:
       responses:
         '201':
           description: Firmware successfully added.
+        '409':
+          description: Firmware entry for the specified hardware ID already exists.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Firmware entry for hardwareId FRITZBOX-1234 already exists."
 
   /api/firmware/update:
     put:
