@@ -20,6 +20,13 @@ public class GlobalExceptionHandler {
                 .body(e.getMessage());
     }
 
+    @ExceptionHandler({FirmwareAlreadyExistsException.class})
+    public ResponseEntity<Object> handeAlreadyExistsException(Exception e) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(e.getMessage());
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Object> handleValidationException(MethodArgumentNotValidException e) {
         BindingResult bindingResult = e.getBindingResult();

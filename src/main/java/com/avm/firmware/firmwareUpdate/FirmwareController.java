@@ -14,20 +14,26 @@ public class FirmwareController {
     private final FirmwareService firmwareService;
 
     @Autowired
-    public FirmwareController( FirmwareService firmwareService){
+    public FirmwareController(FirmwareService firmwareService) {
         this.firmwareService = firmwareService;
     }
 
     @PostMapping("/add")
     public ResponseEntity<Void> addFirmware(@RequestBody FirmwareDTO firmwareDto) {
-        firmwareService.addFirmware(firmwareDto);
+        this.firmwareService.addFirmware(firmwareDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<Void> updateFirmware(@RequestBody FirmwareDTO firmwareDto) {
+        this.firmwareService.updateFirmware(firmwareDto);
+        return ResponseEntity.ok().build();
     }
 
     //For personal testing purposes only
     @GetMapping("/{hardwareId}")
     public ResponseEntity<FirmwareDTO> getFirmware(@PathVariable String hardwareId) {
-        return ResponseEntity.ok(firmwareService.getFirmware(hardwareId));
+        return ResponseEntity.ok(this.firmwareService.getFirmware(hardwareId));
     }
 
     @PostMapping("/check-update")

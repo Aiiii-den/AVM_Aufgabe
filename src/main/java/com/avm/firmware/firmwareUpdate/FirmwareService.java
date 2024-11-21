@@ -1,5 +1,6 @@
 package com.avm.firmware.firmwareUpdate;
 
+import com.avm.firmware.exceptions.FirmwareAlreadyExistsException;
 import com.avm.firmware.exceptions.FirmwareNotFoundException;
 import com.avm.firmware.firmwareUpdate.models.FirmwareDBO;
 import com.avm.firmware.firmwareUpdate.models.FirmwareDTO;
@@ -19,16 +20,19 @@ public class FirmwareService {
     }
 
     public void addFirmware(FirmwareDTO firmwareDto) {
-        //TODO add validation if not hardwareId already exists
+        if (this.firmwareRepository.findById(firmwareDto.getHardwareId()).isPresent()) {
+            throw new FirmwareAlreadyExistsException("Firmware entry for hardware ID " +
+                    firmwareDto.getHardwareId() + " already exists");
+        }
         firmwareRepository.save(firmwareDtoToFirmwareDbo(firmwareDto));
     }
 
-    public FirmwareUpdateResponse checkForUpdate(FritzBoxRequest request) {
-        FirmwareDBO firmwareDbo = firmwareRepository.findById(request.getHardwareId())
+    public FirmwareUpdateResponse checkForUpdate(FritzBoxRequest updateRequest) {
+        FirmwareDBO firmwareDbo = firmwareRepository.findById(updateRequest.getHardwareId())
                 .orElseThrow(() -> new FirmwareNotFoundException("Firmware for hardware ID " +
-                        request.getHardwareId() + " not found"));
+                        updateRequest.getHardwareId() + " not found"));
 
-        if (newVersionExists(request.getCurrentVersion(), firmwareDbo.getVersion())) {
+        if (newVersionExists(updateRequest.getCurrentVersion(), firmwareDbo.getVersion())) {
             return FirmwareUpdateResponse.builder()
                     .updateRequired(true)
                     .downloadUrl(firmwareDbo.getDownloadUrl())
@@ -40,7 +44,17 @@ public class FirmwareService {
                 .build();
     }
 
-    //TODO implement PUT for updating the firmware for a specific hardwareId
+    public void updateFirmware(FirmwareDTO firmwareDto) {
+        FirmwareDBO firmwareDBO = this.firmwareRepository.findById(firmwareDto.getHardwareId())
+                .orElseThrow(() -> new FirmwareNotFoundException("Firmware for hardware ID " +
+                        firmwareDto.getHardwareId() + " not found"));
+
+        firmwareDBO.setFirmwareName(firmwareDto.getFirmwareName());
+        firmwareDBO.setVersion(firmwareDto.getVersion());
+        firmwareDBO.setDownloadUrl(firmwareDto.getDownloadUrl());
+
+        firmwareRepository.save(firmwareDBO);
+    }
 
 
     public boolean newVersionExists(String currentVersion, String newVersion) {
@@ -62,7 +76,7 @@ public class FirmwareService {
 
 
     // for simplicity manual mapping instead of using MapStruct
-    private FirmwareDBO firmwareDtoToFirmwareDbo(FirmwareDTO firmwareDTO){
+    private FirmwareDBO firmwareDtoToFirmwareDbo(FirmwareDTO firmwareDTO) {
         return FirmwareDBO.builder()
                 .firmwareName(firmwareDTO.getFirmwareName())
                 .hardwareId(firmwareDTO.getHardwareId())
