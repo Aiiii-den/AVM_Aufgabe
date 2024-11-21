@@ -33,6 +33,13 @@ paths:
                 updateRequired: true
                 downloadUrl: "http://example.com/firmware/v2.0.0"
                 firmwareName: "Firmware v2.0.0"
+        '404':
+          description: Firmware not found for the specified hardware ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: "Firmware for hardware ID FRITZBOX-1234 not found."
 
   /api/firmware/add:
     post:
@@ -52,6 +59,13 @@ paths:
       responses:
         '201':
           description: Firmware successfully added.
+        '409':
+          description: Firmware entry for the specified hardware ID already exists.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: "Firmware entry for hardware ID FRITZBOX-1234 already exists."
 
   /api/firmware/update:
     put:
@@ -72,7 +86,12 @@ paths:
         '200':
           description: Firmware successfully updated.
         '404':
-          description: Firmware with the specified hardware ID not found.
+          description: Firmware entry for the specified hardware ID not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: "Firmware for hardware ID FRITZBOX-1234 not found."
 
 components:
   schemas:
@@ -112,3 +131,8 @@ components:
         downloadUrl:
           type: string
           description: URL to download the firmware.
+    Error:
+      type: object
+      properties:
+        error:
+          type: string

@@ -87,6 +87,7 @@ public class FirmwareService {
                 .build();
     }
 
+    //For personal testing only
     public FirmwareDTO getFirmware(String hardwareId) {
         FirmwareDBO firmwareDBO = this.firmwareRepository.findById(hardwareId)
                 .orElseThrow(() -> new FirmwareNotFoundException("not found"));
