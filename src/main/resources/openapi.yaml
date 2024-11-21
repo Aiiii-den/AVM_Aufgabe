@@ -1,0 +1,114 @@
+openapi: 3.0.3
+info:
+  title: Firmware Update Service API
+  description: API for managing firmware updates for FritzBox hardware.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+
+paths:
+  /api/firmware/check-update:
+    post:
+      summary: Check if a firmware update is available
+      description: Takes the current firmware information from a device and checks if an update is needed.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FirmwareCheckRequest'
+            example:
+              hardwareId: "FRITZBOX-1234"
+              currentVersion: "1.0.0"
+      responses:
+        '200':
+          description: Information about whether an update is required.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FirmwareUpdateResponse'
+              example:
+                updateRequired: true
+                downloadUrl: "http://example.com/firmware/v2.0.0"
+                firmwareName: "Firmware v2.0.0"
+
+  /api/firmware/add:
+    post:
+      summary: Add new firmware information
+      description: Adds a new firmware entry for a specific hardware ID.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Firmware'
+            example:
+              hardwareId: "FRITZBOX-1234"
+              name: "Firmware v1.0.0"
+              version: "1.0.0"
+              downloadUrl: "http://example.com/firmware/v1.0.0"
+      responses:
+        '201':
+          description: Firmware successfully added.
+
+  /api/firmware/update:
+    put:
+      summary: Update existing firmware information
+      description: Updates the firmware entry for a specific hardware ID.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Firmware'
+            example:
+              hardwareId: "FRITZBOX-1234"
+              name: "Firmware v1.1.0"
+              version: "1.1.0"
+              downloadUrl: "http://example.com/firmware/v1.1.0"
+      responses:
+        '200':
+          description: Firmware successfully updated.
+        '404':
+          description: Firmware with the specified hardware ID not found.
+
+components:
+  schemas:
+    FirmwareCheckRequest:
+      type: object
+      properties:
+        hardwareId:
+          type: string
+          description: The ID of the hardware to check.
+        currentVersion:
+          type: string
+          description: The current firmware version on the device.
+    FirmwareUpdateResponse:
+      type: object
+      properties:
+        updateRequired:
+          type: boolean
+          description: Whether an update is required.
+        downloadUrl:
+          type: string
+          description: The URL to download the new firmware.
+        firmwareName:
+          type: string
+          description: The name of the new firmware.
+    Firmware:
+      type: object
+      properties:
+        hardwareId:
+          type: string
+          description: Unique identifier for the hardware.
+        name:
+          type: string
+          description: Descriptive name for the firmware.
+        version:
+          type: string
+          description: The version of the firmware.
+        downloadUrl:
+          type: string
+          description: URL to download the firmware.

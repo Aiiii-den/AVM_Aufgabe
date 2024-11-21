@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/firmware-update")
+@RequestMapping("/api/v1/firmware")
 public class FirmwareController {
     private final FirmwareService firmwareService;
 
